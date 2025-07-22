@@ -16,36 +16,25 @@
 
 // WITHOUT A LIBRARY
 "use client"
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const CountDown = () => {
-  
-  let difference = +new Date(`06/31/2025`) - +new Date();
-  const [delay, setDelay] = useState(difference);
-
-  const d = Math.floor(difference / (1000 * 60 * 60 * 24));
-  const h = Math.floor((difference / (1000 * 60 * 60)) % 24);
-  const m = Math.floor((difference / 1000 / 60) % 60);
-  const s = Math.floor((difference / 1000) % 60);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setDelay(delay - 1);
+    const targetTime = new Date("2025-12-31T23:59:59").getTime(); // or your deadline
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const diff = Math.floor((targetTime - now) / 1000);
+      setTimeLeft(diff);
     }, 1000);
 
-    if (delay === 0) {
-      clearInterval(timer);
-    }
+    return () => clearInterval(interval);
+  }, []);
 
-    return () => {
-      clearInterval(timer);
-    };
-  });
-  return (
-    <span className="font-bold text-5xl text-yellow-300">
-      {d}:{h}:{m}:{s}
-    </span>
-  );
+  if (timeLeft === null) return null; // Or show a loading placeholder
+
+  return <span>{timeLeft}</span>;
 };
 
 export default CountDown;
